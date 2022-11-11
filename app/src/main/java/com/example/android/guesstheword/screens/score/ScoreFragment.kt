@@ -22,6 +22,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.android.guesstheword.R
@@ -31,6 +34,9 @@ import com.example.android.guesstheword.databinding.ScoreFragmentBinding
  * Fragment where the final score is shown, after the game is over
  */
 class ScoreFragment : Fragment() {
+
+    lateinit var  scoreviewmodel:ScoreViewModel
+    lateinit var scoreviewmodelfactory:ScoreViewModelFActory
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -46,9 +52,19 @@ class ScoreFragment : Fragment() {
                 false
         )
 
+
+
         // Get args using by navArgs property delegate
         val scoreFragmentArgs by navArgs<ScoreFragmentArgs>()
-        binding.scoreText.text = scoreFragmentArgs.score.toString()
+        //binding.scoreText.text = scoreFragmentArgs.score.toString()
+        //create our view Model factory
+        scoreviewmodelfactory= ScoreViewModelFActory(scoreFragmentArgs.score)
+        //initialze our scoreviewMdel
+        scoreviewmodel= ViewModelProviders.of(this,scoreviewmodelfactory).get(ScoreViewModel::class.java)
+        scoreviewmodel.score.observe(viewLifecycleOwner, Observer { newscore->
+
+            binding.scoreText.text=newscore.toString()
+        })
         binding.playAgainButton.setOnClickListener { onPlayAgain() }
 
         return binding.root
